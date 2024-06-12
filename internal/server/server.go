@@ -1,27 +1,24 @@
 package server
 
 import (
+	trainingSheetHttp "github.com/IIGabriel/training-sheet-crud/internal/trainingSheet/delivery/http"
+	trainingSheetRepository "github.com/IIGabriel/training-sheet-crud/internal/trainingSheet/repository"
+	trainingSheetUC "github.com/IIGabriel/training-sheet-crud/internal/trainingSheet/usecase"
 	"github.com/labstack/echo/v4"
-	echoswagger "github.com/swaggo/echo-swagger"
-
-	_ "stl-file-analysis/docs"
-
-	stlttp "stl-file-analysis/internal/stl/delivery/http"
-	"stl-file-analysis/internal/stl/usecase"
 )
 
 func (s *Server) MapControllers(app *echo.Echo) error {
 
-	app.GET("/swagger/*", echoswagger.WrapHandler)
+	traningSheetRepo := trainingSheetRepository.NewTrainingSheetRepository()
 
 	// UseCases
-	stlUseCase := usecase.NewStlUseCase()
+	stlUseCase := trainingSheetUC.NewTrainingSheetUseCase(traningSheetRepo)
 
 	// Controllers
-	stlController := stlttp.NewStlController(stlUseCase)
+	stlController := trainingSheetHttp.NewTrainingSheetController(stlUseCase)
 
 	// Routes
-	stlttp.MapStlRoutes(app.Group("/stl"), stlController)
+	trainingSheetHttp.MapTrainingSheetRoutes(app.Group("/training-sheet"), stlController)
 
 	return nil
 }
